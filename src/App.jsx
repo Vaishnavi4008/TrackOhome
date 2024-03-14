@@ -1,7 +1,55 @@
 import logo from './logo.svg';
 import './App.css';
+import React, { useState, useEffect } from 'react';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import {db} from './config';
+import { doc, getDoc } from "firebase/firestore";
+import { getDatabase, ref, onValue } from "firebase/database";
+
+
+// Initialize Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyBH8a5mEcL5SQz9ZZ2lDPHRvaVueSPJDnc",
+  authDomain: "seraphic-alloy-413210.firebaseapp.com",
+  projectId: "seraphic-alloy-413210",
+};
+
+// if (!firebase.apps.length) {
+//   firebase.initializeApp(firebaseConfig);
+// }
+
 
 function App() {
+  const [temperature, setTemperature] = useState(null);
+
+  useEffect(() => {
+    // Get a reference to the Firebase Realtime Database service
+    const db = getDatabase();
+    
+    // Reference the location in the database
+    const tempRef = ref(db, 'temperature');
+
+    // Set up a listener for real-time updates to the data
+    const unsubscribe = onValue(tempRef, (snapshot) => {
+      if (snapshot.exists()) {
+        // Retrieve the temperature value
+        const temperatureValue = snapshot.val();
+        // Set the temperature state with the retrieved value
+        console.log("Temperature data:", temperatureValue);
+        setTemperature(temperatureValue);
+      } else {
+        console.log('No data available in the "temperature" node!');
+      }
+    });
+
+    // Clean up the listener when the component unmounts
+    return () => unsubscribe();
+  }, []);
+
+  
+
+  
   return (
     <div className="App">
       
@@ -14,7 +62,7 @@ function App() {
 </div>
 </div>
 
-<div class="row justify-content-around">
+<div class="row justify-content-around" style={{display:"flex"}}>
 
 <div class="col-10 col-lg-5 tempBox text-center">
   <i class="icon ion-location"></i>
@@ -48,7 +96,8 @@ function App() {
     </div>
     <div class="col-6 expect text-center">
       <canvas id="expectIcon" width="80" height="80"></canvas> <br/>
-      <p class="text-center thin">Expect <span class="todaySummary">...</span></p>
+      <p class="text-center thin"><h1>Temperature :</h1>
+      <p style={{paddingLeft:"100px",fontSize:"40px"}}>{temperature} °C</p> <span class="todaySummary">...</span></p>
     </div>
     <div class="col-3 tempMinBox">
       <p><span class="tempMin text-right"></span><br/>
