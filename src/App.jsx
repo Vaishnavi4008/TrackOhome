@@ -22,22 +22,25 @@ const firebaseConfig = {
 
 function App() {
   const [temperature, setTemperature] = useState(null);
+  // const [ptemperature, setpTemperature] = useState(null);
+
 
   useEffect(() => {
     // Get a reference to the Firebase Realtime Database service
     const db = getDatabase();
     
     // Reference the location in the database
-    const tempRef = ref(db, 'temperature');
+    const tempRef = ref(db);
 
     // Set up a listener for real-time updates to the data
     const unsubscribe = onValue(tempRef, (snapshot) => {
       if (snapshot.exists()) {
         // Retrieve the temperature value
-        const temperatureValue = snapshot.val();
+        const data = snapshot.val();
+        const dataLength = Object.keys(data).length;
+        const temperatures = Object.values(data).map(entry => entry.temperature); // Extract all temperatures
         // Set the temperature state with the retrieved value
-        console.log("Temperature data:", temperatureValue);
-        setTemperature(temperatureValue);
+        setTemperature(temperatures[dataLength-1]); // Assuming there's only one entry
       } else {
         console.log('No data available in the "temperature" node!');
       }
@@ -58,7 +61,8 @@ function App() {
 
 <div class="row justify-content-center searchBar">
 <div class="col-10 col-lg-8">
-  <input type="text" name="locSearchBox" id="locSearchBox"/>
+  
+  <input type="text" name="locSearchBox" id="locSearchBox" />
 </div>
 </div>
 
@@ -69,9 +73,12 @@ function App() {
   <p><span class="locName">Your Location Here</span></p>
   <canvas id="weatherIcon" width="100" height="100"></canvas>
   <p class="m0"><span class="weatherCondition">...</span></p>
-  <p class="m0"><span class="currentTemp"></span><span class="unit">°C</span></p>
+  <p class="m0"><span class="currentTemp"></span><span class="unit">{temperature}°C</span></p>
   <p class="feels"><i class="wi wi-barometer"></i> Feels Like: <span class="feelsLike">...</span></p>
-  <p class="convertToggle">°C <i class="icon ion-toggle toggleIcon"></i> °F</p>
+  <p class="convertToggle">
+  {temperature}°C <br/>
+  <i class="icon ion-toggle toggleIcon"></i> {((temperature * 9/5) + 32).toFixed(2)}°F
+</p>
   <div class="row tempBoxSubInfo">
     <div class="col">
       <p><i class="wi wi-windy"></i>
@@ -101,7 +108,7 @@ function App() {
     </div>
     <div class="col-3 tempMinBox">
       <p><span class="tempMin text-right"></span><br/>
-        <i class="icon ion-arrow-graph-down-right"></i>
+        <i class="icon ion-arrow-graph-down-right">...</i>
       </p>
     </div>
   </div>
