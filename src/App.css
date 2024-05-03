@@ -4,7 +4,7 @@ body {
 	background-color: #E9E9E9;
 	margin: 0;
   display: flex;
-    justify-content: center;
+    justify-content:flex-start;
 }
 
 .icon {
@@ -38,6 +38,7 @@ body {
 		color: #fff;
 		padding: 15px;
 		margin-top: 20px;
+		margin-left: 100px;
 		font-weight: bold;
 		border-radius: 8px;
 		background: linear-gradient(160deg,#FBCA88,#EF69AD,#B236D0);
@@ -287,6 +288,7 @@ body {
 @media (max-width: 1199px) {
 	#dailyForecast {
 		.dashboard {
+			margin-left: 100px;
 			.dashboardDaily {
 				margin-top: 50px;
 				.tempMaxBox > p {
